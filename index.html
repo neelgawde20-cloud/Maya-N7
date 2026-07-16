@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Project Maya — Vedanta & the Rare Earth Imperative</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --forest: #0a1f0e;
+    --deep: #061409;
+    --green-dark: #122b18;
+    --green-mid: #1e4a28;
+    --green-bright: #2d6e3e;
+    --green-glow: #3a8a4f;
+    --gold: #c9a84c;
+    --gold-light: #e2c47a;
+    --gold-pale: #f0dca0;
+    --gold-dim: #8a6f30;
+    --cream: #f5ead8;
+    --white: #fdfaf4;
+    --text-muted: #8aab90;
+    --border: rgba(201,168,76,0.2);
+    --border-bright: rgba(201,168,76,0.5);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--deep);
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ── NOISE TEXTURE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4rem;
+    height: 72px;
+    background: rgba(6,20,9,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.35em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.3s;
+    cursor: pointer;
+  }
+
+  .nav-links a:hover,
+  .nav-links a.active {
+    color: var(--gold-light);
+  }
+
+  /* ── PAGES ── */
+  .page {
+    display: none;
+    min-height: 100vh;
+    padding-top: 72px;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .page.active { display: block; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── HERO ── */
+  #home {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 6rem 4rem 4rem;
+    position: relative;
+  }
+
+  /* Radial glow */
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    right: -10%;
+    width: 70%;
+    height: 120%;
+    background: radial-gradient(ellipse at 60% 30%, rgba(45,110,62,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  }
+
+  .hero-eyebrow {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    display: inline-block;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(3.5rem, 7vw, 7rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: var(--white);
+  }
+
+  .hero-title span {
+    display: block;
+    background: linear-gradient(135deg, var(--gold-pale), var(--gold), var(--gold-dim));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.25rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text-muted);
+    max-width: 560px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+  }
+
+  /* Summary cards on home */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    border: 1px solid var(--border);
+    max-width: 900px;
+    margin-bottom: 3rem;
+    background: var(--border);
+  }
+
+  .summary-card {
+    background: var(--green-dark);
+    padding: 1.8rem 1.5rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .summary-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+
+  .summary-card:hover { background: var(--green-mid); }
+  .summary-card:hover::after { transform: scaleX(1); }
+
+  .sc-number {
+    font-family: 'Cinzel', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .sc-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.6rem;
+  }
+
+  .sc-desc {
+    font-size: 0.82rem;
+    color: var(--cream);
+    line-height: 1.5;
+    font-weight: 300;
+  }
+
+  .cta-row {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .btn-primary {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+    color: var(--deep);
+    border: none;
+    padding: 1rem 2.5rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--gold-pale), var(--gold));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .btn-primary:hover::before { opacity: 1; }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(201,168,76,0.3); }
+
+  .btn-secondary {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--gold);
+    border: 1px solid var(--border-bright);
+    padding: 1rem 2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .btn-secondary:hover { background: rgba(201,168,76,0.08); border-color: var(--gold); }
+
+  /* ── SECTION PAGES ── */
+  .section-hero {
+    padding: 6rem 4rem 4rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-hero::before {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 50%;
+    height: 100%;
+    background: radial-gradient(ellipse at 80% 50%, rgba(45,110,62,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .section-tag {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-tag span {
+    color: var(--green-bright);
+    font-size: 0.55rem;
+  }
+
+  .section-tag::before {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--white);
+    max-width: 700px;
+    margin-bottom: 1rem;
+  }
+
+  .section-title em {
+    font-style: normal;
+    background: linear-gradient(135deg, var(--gold-pale), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .section-intro {
+    font-size: 1.15rem;
+    font-weight: 300;
+    font-style: italic;
+    color: var(--text-muted);
+    max-width: 620px;
+    line-height: 1.7;
+  }
+
+  .section-body {
+    padding: 4rem;
+  }
+
+  /* ── CONTENT BLOCKS ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    margin-bottom: 4rem;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .content-card {
+    background: var(--green-dark);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    position: relative;
+  }
+
+  .content-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 40px;
+    background: var(--gold);
+  }
+
+  .card-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+
+  .card-body {
+    font-size: 0.95rem;
+    font-weight: 300;
+    line-height: 1.8;
+    color: var(--cream);
+  }
+
+  .card-body strong {
+    color: var(--gold-light);
+    font-weight: 600;
+  }
+
+  /* Stat block */
+  .stat-block {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: var(--green-dark);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .stat-block::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 25%; right: 25%;
+    height: 1px;
+    background: var(--gold);
+  }
+
+  .stat-number {
+    font-family: 'Cinzel', serif;
+    font-size: 2.8rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--gold-pale), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-unit {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-desc {
+    font-size: 0.85rem;
+    color: var(--cream);
+    font-style: italic;
+    font-weight: 300;
+  }
+
+  /* Scenario table */
+  .scenario-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 3rem;
+  }
+
+  .scenario-table th {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 1rem 1.5rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-bright);
+  }
+
+  .scenario-table td {
+    padding: 1.1rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 300;
+    border-bottom: 1px solid var(--border);
+    color: var(--cream);
+  }
+
+  .scenario-table tr:hover td { background: rgba(45,110,62,0.12); }
+
+  .scenario-table .highlight td {
+    background: rgba(201,168,76,0.06);
+    color: var(--gold-light);
+    font-weight: 600;
+  }
+
+  .tag-green {
+    display: inline-block;
+    background: rgba(45,110,62,0.3);
+    border: 1px solid var(--green-bright);
+    color: var(--green-glow);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+    margin-bottom: 3rem;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--gold), transparent);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding: 0 0 2.5rem 2rem;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -0.35rem;
+    top: 0.4rem;
+    width: 8px;
+    height: 8px;
+    background: var(--gold);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--gold);
+  }
+
+  .timeline-date {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    margin-bottom: 0.3rem;
+  }
+
+  .timeline-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--gold-light);
+    margin-bottom: 0.4rem;
+  }
+
+  .timeline-body {
+    font-size: 0.9rem;
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.7;
+  }
+
+  /* Quote */
+  .pull-quote {
+    border-left: 3px solid var(--gold);
+    padding: 1.5rem 2rem;
+    margin: 3rem 0;
+    background: rgba(201,168,76,0.04);
+  }
+
+  .pull-quote p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.6;
+    color: var(--gold-pale);
+    margin-bottom: 0.5rem;
+  }
+
+  .pull-quote cite {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+
+  /* Value chain */
+  .chain {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 2rem 0 3rem;
+    overflow-x: auto;
+  }
+
+  .chain-step {
+    flex: 1;
+    min-width: 120px;
+    background: var(--green-dark);
+    border: 1px solid var(--border);
+    padding: 1.2rem 1rem;
+    text-align: center;
+    position: relative;
+  }
+
+  .chain-step::after {
+    content: '→';
+    position: absolute;
+    right: -0.9rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold);
+    font-size: 1.2rem;
+    z-index: 1;
+  }
+
+  .chain-step:last-child::after { display: none; }
+
+  .chain-step.reliance-step {
+    background: linear-gradient(135deg, rgba(45,110,62,0.4), rgba(30,74,40,0.6));
+    border-color: var(--gold);
+  }
+
+  .chain-icon {
+    font-size: 1.4rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .chain-label {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .chain-name {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    color: var(--gold-light);
+  }
+
+  .chain-step.reliance-step .chain-label,
+  .chain-step.reliance-step .chain-name {
+    color: var(--gold);
+  }
+
+  /* CTA Section */
+  .cta-section {
+    background: linear-gradient(135deg, var(--green-dark), var(--forest));
+    border: 1px solid var(--border);
+    padding: 5rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    margin: 4rem;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(201,168,76,0.06) 0%, transparent 70%);
+  }
+
+  .cta-section h2 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.8rem, 3.5vw, 3rem);
+    font-weight: 700;
+    color: var(--gold-pale);
+    margin-bottom: 1rem;
+    position: relative;
+  }
+
+  .cta-section p {
+    font-size: 1.1rem;
+    font-style: italic;
+    font-weight: 300;
+    color: var(--text-muted);
+    max-width: 500px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+    position: relative;
+  }
+
+  .cta-section .btn-primary {
+    position: relative;
+    font-size: 0.75rem;
+    padding: 1.2rem 3rem;
+  }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-bright), transparent);
+    margin: 3rem 0;
+  }
+
+  .gold-line {
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-dim));
+    margin: 0 4rem;
+  }
+
+  /* Scroll indicator */
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.5;
+    animation: bounce 2s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50% { transform: translateX(-50%) translateY(6px); }
+  }
+
+  .scroll-hint span {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+  }
+
+  /* Highlight pill */
+  .pill {
+    display: inline-block;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid var(--border);
+    color: var(--gold-light);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.62rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 2px;
+    margin: 0.25rem;
+  }
+
+  /* Footer */
+  footer {
+    padding: 2rem 4rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  footer p {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.58rem;
+    letter-spacing: 0.15em;
+    color: var(--green-bright);
+    text-transform: uppercase;
+  }
+
+  footer .conf {
+    color: var(--gold-dim);
+  }
+
+  /* List style */
+  .styled-list {
+    list-style: none;
+    margin: 0;
+  }
+
+  .styled-list li {
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.95rem;
+    font-weight: 300;
+    color: var(--cream);
+    line-height: 1.6;
+    padding-left: 1.5rem;
+    position: relative;
+  }
+
+  .styled-list li::before {
+    content: '◆';
+    position: absolute;
+    left: 0;
+    color: var(--gold);
+    font-size: 0.5rem;
+    top: 1rem;
+  }
+
+  .styled-list li strong {
+    color: var(--gold-light);
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 1.5rem; }
+    .nav-links { gap: 1.2rem; }
+    .hero, .section-hero, .section-body { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .summary-grid { grid-template-columns: 1fr 1fr; }
+    .two-col { grid-template-columns: 1fr; gap: 1.5rem; }
+    .three-col { grid-template-columns: 1fr; }
+    .chain { flex-wrap: wrap; }
+    .chain-step::after { display: none; }
+    footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    .cta-section { margin: 2rem 1.5rem; padding: 3rem 1.5rem; }
+    .gold-line { margin: 0 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Project Maya</div>
+  <ul class="nav-links">
+    <li><a href="#" onclick="showPage('home')" id="nav-home" class="active">Overview</a></li>
+    <li><a href="#" onclick="showPage('opportunity')" id="nav-opportunity">The Opportunity</a></li>
+    <li><a href="#" onclick="showPage('makeinIndia')" id="nav-makeinIndia">Make in India</a></li>
+    <li><a href="#" onclick="showPage('reliance')" id="nav-reliance">Vedanta Play</a></li>
+    <li><a href="#" onclick="showPage('economics')" id="nav-economics">Economics</a></li>
+  </ul>
+</nav>
+
+<!-- ══════════ PAGE: HOME ══════════ -->
+<div id="home" class="page active">
+  <section class="hero">
+    <div class="hero-eyebrow">Confidential — Strategic Investment Brief</div>
+    <h1 class="hero-title">
+      The Rare Earth<br/>
+      <span>Imperative.</span>
+    </h1>
+    <p class="hero-sub">
+      A once-in-a-generation inflection point for India to own the next layer of the global clean-energy supply chain — and for Vedanta to lead it.
+    </p>
+
+    <div class="summary-grid">
+      <div class="summary-card" onclick="showPage('opportunity')">
+        <div class="sc-number">95%</div>
+        <div class="sc-label">China's grip on refining</div>
+        <div class="sc-desc">NdPr oxide powers EVs, wind turbines & defence. The world is actively de-risking.</div>
+      </div>
+      <div class="summary-card" onclick="showPage('makeinIndia')">
+        <div class="sc-number">2026</div>
+        <div class="sc-label">India-US & India-Russia deals signed</div>
+        <div class="sc-desc">Critical mineral frameworks in place. Political will has never been stronger.</div>
+      </div>
+      <div class="summary-card" onclick="showPage('reliance')">
+        <div class="sc-number">5,000</div>
+        <div class="sc-label">Tonnes per annum secured</div>
+        <div class="sc-desc">Offtake rights from SEA mines. Refine, magnetise, sell surplus — India becomes a refining hub.</div>
+      </div>
+      <div class="summary-card" onclick="showPage('economics')">
+        <div class="sc-number">$180M</div>
+        <div class="sc-label">Operating income — upside</div>
+        <div class="sc-desc">Base: $140M annual operating income. 10–15% discounted entry into a $400M/yr revenue platform.</div>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <button class="btn-primary" onclick="showPage('opportunity')">Explore the Opportunity →</button>
+      <button class="btn-secondary" onclick="showPage('economics')">View Economics</button>
+    </div>
+
+    <div class="scroll-hint">
+      <span>Navigate above</span>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 3v10M4 9l4 4 4-4" stroke="#c9a84c" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+  </section>
+  <div class="gold-line"></div>
+  <footer>
+    <p>ARK Management Advisors — Structured Rare Earth Offtake</p>
+    <p class="conf">Strictly Confidential · Not for Circulation</p>
+  </footer>
+</div>
+
+<!-- ══════════ PAGE: OPPORTUNITY ══════════ -->
+<div id="opportunity" class="page">
+  <section class="section-hero">
+    <div class="section-tag">01 <span>/ 05</span> — The Opportunity</div>
+    <h2 class="section-title">NdPr: The Mineral<br/>That Moves the <em>World</em></h2>
+    <p class="section-intro">Neodymium-Praseodymium oxide is the critical input for permanent magnets. Every EV, every wind turbine, every defence system runs on it.</p>
+  </section>
+
+  <div class="section-body">
+    <div class="three-col">
+      <div class="stat-block">
+        <div class="stat-number">$130K+</div>
+        <div class="stat-unit">per tonne — 99%+ purity</div>
+        <div class="stat-desc">Standard 95% purity trades at $70K–$100K. Refining to 99%+ unlocks a 30–40% price uplift</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-number">80–90%</div>
+        <div class="stat-unit">China controls refining</div>
+        <div class="stat-desc">Western nations & India are actively building alternative supply chains for strategic sovereignty</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-number">29,000</div>
+        <div class="stat-unit">MT/year — Mine 1 confirmed</div>
+        <div class="stat-desc">South East Asian multi-deposit platform with secured offtake of up to 5% of production from Mine 1</div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div>
+        <div class="content-card">
+          <div class="card-title">What is NdPr?</div>
+          <div class="card-body">
+            Neodymium-Praseodymium (NdPr) oxide is the backbone of <strong>permanent rare earth magnets</strong> — the enabling technology for:
+            <br/><br/>
+            <ul class="styled-list" style="margin-top:0.5rem">
+              <li>Electric Vehicle motors & drivetrains</li>
+              <li>Offshore & onshore wind turbine generators</li>
+              <li>Defence — missiles, radar, advanced avionics</li>
+              <li>Consumer electronics, robotics, MRI machines</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="content-card">
+          <div class="card-title">The Supply Chain Position</div>
+          <div class="card-body">
+            ARK's model does not require owning mines. The platform <strong>controls the commercial layer</strong> — offtake rights, pricing, refining, and distribution.
+            <br/><br/>
+            <strong>Secured offtake:</strong> Up to 5% of Mine 1 production<br/>
+            <strong>First right of refusal:</strong> Mines 2 & 3<br/>
+            <strong>Commission rights:</strong> 20 years<br/>
+            <strong>Production start:</strong> Q4 2027 (18–24 month ramp)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-card" style="margin-bottom:2rem">
+      <div class="card-title">Value Chain — Where Vedanta Enters</div>
+      <div class="chain" style="margin-top:1.5rem">
+        <div class="chain-step">
+          <div class="chain-icon">⛏️</div>
+          <div class="chain-label">Upstream</div>
+          <div class="chain-name">Mining</div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-icon">🪨</div>
+          <div class="chain-label">Processing</div>
+          <div class="chain-name">Concentrate</div>
+        </div>
+        <div class="chain-step reliance-step">
+          <div class="chain-icon">✦</div>
+          <div class="chain-label">Vedanta — Entry Point</div>
+          <div class="chain-name">NdPr Oxide 95%</div>
+        </div>
+        <div class="chain-step reliance-step">
+          <div class="chain-icon">🏭</div>
+          <div class="chain-label">Vedanta Refinery</div>
+          <div class="chain-name">Oxide 99%+</div>
+        </div>
+        <div class="chain-step reliance-step">
+          <div class="chain-icon">🧲</div>
+          <div class="chain-label">Vedanta Manufacturing</div>
+          <div class="chain-name">Permanent Magnets</div>
+        </div>
+        <div class="chain-step">
+          <div class="chain-icon">🌐</div>
+          <div class="chain-label">End Markets</div>
+          <div class="chain-name">EV · Wind · Defence</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pull-quote">
+      <p>"The company that controls rare earth refining in the next decade will do what OPEC did for oil — set the terms of the energy transition."</p>
+      <cite>— Strategic Context, ARK Management Advisors</cite>
+    </div>
+  </div>
+
+  <div class="gold-line"></div>
+  <footer>
+    <p>Project Maya — Confidential Brief</p>
+    <p class="conf">Section 01 — The Opportunity</p>
+  </footer>
+</div>
+
+<!-- ══════════ PAGE: MAKE IN INDIA ══════════ -->
+<div id="makeinIndia" class="page">
+  <section class="section-hero">
+    <div class="section-tag">02 <span>/ 05</span> — Make in India</div>
+    <h2 class="section-title">India's Moment.<br/><em>Political Will Meets</em><br/>Strategic Necessity.</h2>
+    <p class="section-intro">Two landmark agreements signed in 2026. The geopolitical framework is in place. The only question is: who builds the refining infrastructure?</p>
+  </section>
+
+  <div class="section-body">
+
+    <div class="two-col">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-date">May 26, 2026 — New Delhi</div>
+          <div class="timeline-title">India – United States Critical Minerals Framework</div>
+          <div class="timeline-body">External Affairs Minister Jaishankar and U.S. Secretary of State Marco Rubio signed a bilateral framework covering <strong>mining, processing, recycling, financing, and management</strong> of critical minerals and rare earths. Rubio called it "a tangible example of the U.S.-India strategic alliance." The deal is explicitly aimed at reducing dependence on China's processing dominance.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">2026 — Strategic MoU</div>
+          <div class="timeline-title">India – Russia: Rosatom × Nexon Geochem</div>
+          <div class="timeline-body">Rosatom and India's Nexon Geochem signed an MoU for <strong>high-purity material collaboration, advanced processing, and joint production facilities</strong>. A direct move to build Atmanirbhar rare earth processing capability at scale.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-date">Structural Reality</div>
+          <div class="timeline-title">China Controls ~95% of Global Processing</div>
+          <div class="timeline-body">Every major economy — US, EU, Japan, India — is urgently building alternative refining capacity. <strong>The nation that builds India's rare earth refinery will set terms for the next 30 years of supply.</strong></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="content-card" style="margin-bottom:1.5rem">
+          <div class="card-title">Why the Agarwal Vision Aligns</div>
+          <div class="card-body">
+            Vedanta's founding thesis — that India must own its natural resources value chain, not export ore and import finished metal — is precisely the rare earth problem restated.
+            <br/><br/>
+            The group has publicly committed to critical minerals as a growth vertical and participated in India's critical mineral block auctions. <strong>NdPr refining is not a diversification for Vedanta. It is the next chapter of its founding story.</strong>
+          </div>
+        </div>
+        <div class="content-card">
+          <div class="card-title">What Make in India Unlocks</div>
+          <div class="card-body">
+            <ul class="styled-list">
+              <li><strong>Domestic magnet manufacturing</strong> — India's first integrated mine-to-magnet value chain under one group</li>
+              <li><strong>Export surplus</strong> to US, EU, Japan as a trusted non-China source</li>
+              <li><strong>Strategic leverage</strong> in bilateral frameworks already signed</li>
+              <li><strong>Government incentive eligibility</strong> under PLI schemes for critical minerals</li>
+              <li><strong>First-mover refinery advantage</strong> — infrastructure moat for 20+ years</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pull-quote">
+      <p>"We are today signing a bilateral India-US framework on securing supplies of mining and processing of critical minerals and rare earths."</p>
+      <cite>— S. Jaishankar, External Affairs Minister of India, May 26, 2026</cite>
+    </div>
+
+    <div style="display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:1rem;">
+      <span class="pill">Atmanirbhar Bharat</span>
+      <span class="pill">India-US Strategic Alliance</span>
+      <span class="pill">India-Russia MoU</span>
+      <span class="pill">PLI Eligibility</span>
+      <span class="pill">Green Energy Foundation</span>
+      <span class="pill">Non-China Supply Chain</span>
+    </div>
+
+  </div>
+
+  <div class="gold-line"></div>
+  <footer>
+    <p>Project Maya — Confidential Brief</p>
+    <p class="conf">Section 02 — Make in India</p>
+  </footer>
+</div>
+
+<!-- ══════════ PAGE: RELIANCE PLAY ══════════ -->
+<div id="reliance" class="page">
+  <section class="section-hero">
+    <div class="section-tag">03 <span>/ 05</span> — The Vedanta Play</div>
+    <h2 class="section-title">Refine. Magnetise.<br/><em>Sell to the World.</em></h2>
+    <p class="section-intro">Three interlocking moves. Each one profitable standalone. Together, they position Vedanta as the rare earth refining champion of the non-China world — a natural extension of four decades of metallurgical mastery.</p>
+  </section>
+
+  <div class="section-body">
+
+    <div class="three-col">
+      <div class="content-card">
+        <div class="tag-green">Move 01</div>
+        <div class="card-title">Secure the Refining Rights</div>
+        <div class="card-body">
+          Acquire India-region refining rights for NdPr oxide sourced from SEA mines via the ARK offtake platform. Refinery capex: <strong>USD 300M–400M</strong> for 5,000 MTPA capacity.
+          <br/><br/>
+          Entry via <strong>prepayment secures 10–15% discount</strong> on spot prices. 20-year commission rights from Q4 2027.
+        </div>
+      </div>
+      <div class="content-card">
+        <div class="tag-green">Move 02</div>
+        <div class="card-title">Manufacture Permanent Magnets</div>
+        <div class="card-body">
+          Downstream integration: convert refined NdPr oxide (99%+ purity) into <strong>NdFeB permanent magnets</strong> — the highest-margin node in the entire value chain.
+          <br/><br/>
+          Vedanta already sells refined metal to India's EV, energy & defence manufacturers. Magnets slot directly into existing customer relationships.
+        </div>
+      </div>
+      <div class="content-card">
+        <div class="tag-green">Move 03</div>
+        <div class="card-title">Export Surplus to Hungry Markets</div>
+        <div class="card-body">
+          US, EU, and Japan are <strong>contractually committed</strong> to building non-China supply chains. India becomes the alternative. Vedanta sells surplus refined oxide and magnets at premium to Western buyers.
+          <br/><br/>
+          A built-in export market that becomes larger as geopolitical pressure on China intensifies.
+        </div>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="content-card">
+        <div class="card-title">Why Vedanta — and No One Else</div>
+        <div class="card-body">
+          <ul class="styled-list">
+            <li><strong>Refining is core DNA, not diversification</strong> — India's largest diversified natural resources group already runs zinc, aluminium, copper & silver refining at global scale</li>
+            <li>Hindustan Zinc operates world-class <strong>hydrometallurgy & solvent extraction</strong> — the same chemistry family as NdPr separation</li>
+            <li>Capital at scale — $300–400M refinery capex is within one investment cycle</li>
+            <li>Deep government relationships — active participant in India's critical mineral block auctions & PLI frameworks</li>
+            <li><strong>Counter-cyclical hedge</strong> — zinc & aluminium are commodity-cycle exposed; NdPr rides the structural electrification wave</li>
+            <li>Established global buyer network across metals — Western customers already on the books</li>
+          </ul>
+        </div>
+      </div>
+      <div class="content-card">
+        <div class="card-title">Competitive Moat — Built In</div>
+        <div class="card-body">
+          Rare earth refinery infrastructure takes <strong>7–10 years to replicate</strong>. First mover sets:
+          <br/><br/>
+          <ul class="styled-list">
+            <li>Long-term offtake contracts with US & EU buyers at locked-in premiums</li>
+            <li>Government designation as <strong>India's strategic rare earth refiner</strong></li>
+            <li>IP & process know-how in high-purity NdPr separation</li>
+            <li>A 20-year platform with first right of refusal on Mines 2 & 3</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- JAMNAGAR SECTION -->
+    <div class="divider"></div>
+
+    <div style="margin-bottom:2rem">
+      <div class="section-tag" style="margin-bottom:1.5rem">The Vedanta Advantage <span>— Metallurgical DNA, Not Greenfield Risk</span></div>
+      <p style="font-size:1.1rem; font-style:italic; font-weight:300; color:var(--text-muted); max-width:680px; line-height:1.7; margin-bottom:2.5rem;">
+        Every other Indian conglomerate would be building a rare earth refinery from zero. Vedanta already operates the exact industrial capabilities NdPr refining demands — separation chemistry, smelting infrastructure, captive power, and port logistics — across four decades of operations.
+      </p>
+    </div>
+
+    <div class="three-col" style="margin-bottom:2rem">
+      <div class="content-card">
+        <div class="card-title">Separation Chemistry — Already Mastered</div>
+        <div class="card-body">
+          NdPr refining is <strong>solvent extraction & hydrometallurgy</strong> — the same process family Hindustan Zinc has run at Chanderiya and Dariba for decades, at some of the world's lowest cost curves. Vedanta's metallurgists don't need to learn rare earth separation. They need to adapt it.
+        </div>
+      </div>
+      <div class="content-card">
+        <div class="card-title">Captive Power & Industrial Utilities</div>
+        <div class="card-body">
+          Rare earth refining is <strong>energy-intensive</strong> — separation processes demand consistent high-load power. Vedanta commands one of India's largest captive power portfolios across Jharsuguda, BALCO and its zinc operations — <strong>9+ GW of generation capacity</strong>, water treatment, and industrial utilities already running.
+        </div>
+      </div>
+      <div class="content-card">
+        <div class="card-title">Port Logistics & Buyer Network</div>
+        <div class="card-body">
+          Vedanta moves millions of tonnes of ore, concentrate & refined metal annually through <strong>established port and rail logistics on both coasts</strong>. Inbound NdPr oxide from South East Asia plugs into existing supply chain muscle — and outbound refined product flows to a global metals customer base Vedanta has served for decades.
+        </div>
+      </div>
+    </div>
+
+    <div class="content-card" style="margin-bottom:2rem">
+      <div class="card-title">Vedanta — The Integrated Stack</div>
+      <div class="chain" style="margin-top:1.5rem">
+        <div class="chain-step reliance-step">
+          <div class="chain-icon">🚢</div>
+          <div class="chain-label">Coastal Port Access</div>
+          <div class="chain-name">Inbound SEA Oxide</div>
+        </div>
+        <div class="chain-step reliance-step">
+          <div class="chain-icon">⚡</div>
+          <div class="chain-label">Captive Power</div>
+          <div class="chain-name">9+ GW Portfolio</div>
+        </div>
+        <div class="chain-step reliance-step">
+          <div class="chain-icon">🧪</div>
+          <div class="chain-label">HZL Hydrometallurgy</div>
+          <div class="chain-name">Solvent Extraction DNA</div>
+        </div>
+        <div class="chain-step reliance-step">
+          <div class="chain-icon">🏭</div>
+          <div class="chain-label">NdPr Refinery</div>
+          <div class="chain-name">95% → 99%+ Purity</div>
+        </div>
+        <div class="chain-step reliance-step">
+          <div class="chain-icon">🧲</div>
+          <div class="chain-label">Magnet Manufacturing</div>
+          <div class="chain-name">EV · Wind · Defence</div>
+        </div>
+        <div class="chain-step reliance-step">
+          <div class="chain-icon">📦</div>
+          <div class="chain-label">Global Buyer Network</div>
+          <div class="chain-name">Surplus → US · EU · JP</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="pull-quote">
+      <p>"Vedanta is the only Indian group for which rare earth refining is an adjacency, not an adventure. The chemistry, the power, the ports, the buyers — the moat already exists."</p>
+      <cite>— Strategic Infrastructure Assessment</cite>
+    </div>
+
+  </div>
+
+  <div class="gold-line"></div>
+  <footer>
+    <p>Project Maya — Confidential Brief</p>
+    <p class="conf">Section 03 — The Vedanta Play</p>
+  </footer>
+</div>
+
+<!-- ══════════ PAGE: ECONOMICS ══════════ -->
+<div id="economics" class="page">
+  <section class="section-hero">
+    <div class="section-tag">04 <span>/ 05</span> — Economics</div>
+    <h2 class="section-title">The Numbers.<br/><em>Conservative. Indicative.</em><br/>Compelling.</h2>
+    <p class="section-intro">All figures are indicative and subject to negotiation. Even the downside case generates USD 140M in annual operating income.</p>
+  </section>
+
+  <div class="section-body">
+
+    <div class="three-col">
+      <div class="stat-block">
+        <div class="stat-number">$140M</div>
+        <div class="stat-unit">Downside annual operating income</div>
+        <div class="stat-desc">NdPr at $70K/T · 5,000 MT · 10% entry discount</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-number">$180M</div>
+        <div class="stat-unit">Base case annual operating income</div>
+        <div class="stat-desc">NdPr at $80K/T · 5,000 MT · 10% entry discount + 35% refining uplift</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-number">$234M</div>
+        <div class="stat-unit">Upside annual operating income</div>
+        <div class="stat-desc">NdPr at $90K/T · 5,000 MT · 12% entry discount + 40% refining uplift</div>
+      </div>
+    </div>
+
+    <div class="content-card" style="margin-bottom:2rem">
+      <div class="card-title">Scenario Analysis — Annual Financials (USD)</div>
+      <table class="scenario-table" style="margin-top:1.5rem">
+        <thead>
+          <tr>
+            <th>Metric</th>
+            <th>Downside</th>
+            <th>Base Case</th>
+            <th>Upside</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>NdPr Price / Tonne</td><td>$70,000</td><td>$80,000</td><td>$90,000</td></tr>
+          <tr><td>Entry Discount</td><td>10%</td><td>10%</td><td>12%</td></tr>
+          <tr><td>Purchase Price / Tonne</td><td>$63,000</td><td>$72,000</td><td>$79,200</td></tr>
+          <tr><td>Volume (Tonnes)</td><td>5,000</td><td>5,000</td><td>5,000</td></tr>
+          <tr><td>Total Sales Revenue</td><td>$350M</td><td>$400M</td><td>$450M</td></tr>
+          <tr><td>Total Purchase Cost</td><td>$315M</td><td>$360M</td><td>$396M</td></tr>
+          <tr><td>Gross Spread</td><td>$35M</td><td>$40M</td><td>$54M</td></tr>
+          <tr><td>Refining Uplift (30–40%)</td><td>$105M</td><td>$140M</td><td>$180M</td></tr>
+          <tr class="highlight"><td><strong>Total Operating Income</strong></td><td><strong>$140M</strong></td><td><strong>$180M</strong></td><td><strong>$234M</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="two-col">
+      <div class="content-card">
+        <div class="card-title">Investor Return Structure</div>
+        <div class="card-body">
+          <ul class="styled-list">
+            <li><strong>60–70%</strong> of distributable economics to investors</li>
+            <li><strong>20%</strong> to platform & origination (ARK)</li>
+            <li>Balance to operators & partners</li>
+            <li>Two return layers: <strong>entry discount margin + refining price uplift</strong></li>
+            <li>Linear expansion potential as volumes increase to Mines 2 & 3</li>
+          </ul>
+        </div>
+      </div>
+      <div class="content-card">
+        <div class="card-title">Refinery Capital Requirement</div>
+        <div class="card-body">
+          A 5,000 MTPA NdPr refinery in India is estimated at <strong>USD 300M–400M</strong> in capex. This is a strategic infrastructure asset, not a trading position.
+          <br/><br/>
+          Against a base-case annual operating income of <strong>$180M</strong>, the implied payback period is under 3 years before surplus export premiums.
+          <br/><br/>
+          <span class="pill" style="margin:0">Payback: ~2–2.5 years (Base)</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-card" style="margin-bottom:1rem">
+      <div class="card-title">Key Risk Considerations</div>
+      <div class="card-body">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:2rem">
+          <div>
+            <p style="color:var(--gold-dim); font-family:'Montserrat',sans-serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.8rem">Risks</p>
+            <ul class="styled-list">
+              <li>Production timing & ramp-up execution (Q4 2027)</li>
+              <li>NdPr spot price volatility</li>
+              <li>Refining technology & processing capability</li>
+              <li>Regulatory & licensing timeline in India</li>
+            </ul>
+          </div>
+          <div>
+            <p style="color:var(--green-glow); font-family:'Montserrat',sans-serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; margin-bottom:0.8rem">Mitigants</p>
+            <ul class="styled-list">
+              <li>Phased capital deployment — not all upfront</li>
+              <li>Discounted entry pricing creates natural price buffer</li>
+              <li>India-US & India-Russia frameworks reduce geopolitical risk</li>
+              <li>Vedanta's four decades of smelting & hydrometallurgy expertise de-risks refining execution</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CTA SECTION -->
+  <div class="cta-section">
+    <h2>The Meeting That Matters</h2>
+    <p>This brief is a starting point. ARK Management Advisors is ready to present the full transaction structure, legal framework, and due diligence package directly to Vedanta's leadership.</p>
+    <button class="btn-primary" onclick="alert('To arrange a meeting with ARK Management Advisors, please contact the presenting party directly. This is a confidential, time-sensitive opportunity.')">
+      Request a Meeting with ARK →
+    </button>
+  </div>
+
+  <div class="gold-line"></div>
+  <footer>
+    <p>Project Maya — Confidential Brief · ARK Management Advisors</p>
+    <p class="conf">All figures indicative · Subject to final negotiation · Not for Circulation</p>
+  </footer>
+</div>
+
+<script>
+  function showPage(id) {
+    // Hide all pages
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    // Remove active from nav
+    document.querySelectorAll('.nav-links a').forEach(a => a.classList.remove('active'));
+    // Show selected
+    document.getElementById(id).classList.add('active');
+    document.getElementById('nav-' + id).classList.add('active');
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
